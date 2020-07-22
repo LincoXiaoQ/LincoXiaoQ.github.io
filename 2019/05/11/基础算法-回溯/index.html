@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>基础算法-回溯 - Linco</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Linco, Blog,"> 
+    <meta name="description" content="回溯算法是将问题转换为抽象图形, 然后对图形进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案
+回溯算法的典型和核心操作是DFS, 与之对应的是以BFS(广度优先搜索,"> 
+    <meta name="author" content="Linco"> 
+    <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
+    <link rel="icon" href="/img/icon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Linco</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">基础算法-回溯</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">基础算法-回溯</h1>
+        <div class="stuff">
+            <span>五月 11, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/java/">java</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/基础算法/">基础算法</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/算法竞赛基础/">算法竞赛基础</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>回溯算法是将问题转换为抽象图形, 然后对图形进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案</p>
+<p>回溯算法的典型和核心操作是DFS, 与之对应的是以BFS(广度优先搜索)为代表的分支界限算法</p>
+<p>回溯算法解决问题的思路大概是这样的:</p>
+<ol>
+<li>按问题构造抽象图形, 可以是图或树</li>
+<li>明确需要记录的节点信息</li>
+<li>列出剪枝的规则以忽略不相干节点</li>
+<li>DFS跳过剪枝遍历节点, 归纳信息</li>
+<li>得到结论</li>
+</ol>
+<p>所以, 能够使用回溯算法解决的问题需要满足以下条件</p>
+<ol>
+<li>问题能够抽象成节点有限的图形</li>
+<li>能够通过遍历找到用于求解答案的关键信息</li>
+</ol>
+<h4 id="DFS-算法实现"><a href="#DFS-算法实现" class="headerlink" title="DFS 算法实现"></a>DFS 算法实现</h4><p>前面提到回溯算法核心就是DFS, 那就先说一下DFS算法, 这里以二叉树的DFS遍历为例, 二叉树的DFS适用于前序, 中序和后序遍历, 不适用于层级遍历</p>
+<p>一般来说, dfs有两种方法, 分别通过递归和栈实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 递归实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(node==<span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">    preOrder(node.left);</span><br><span class="line">    preOrder(node.right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 栈实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    Stack&lt;TreeNode&gt; treeNodeStack=<span class="keyword">new</span> Stack();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(node!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">            stack.push(node);</span><br><span class="line">            node=node.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 节点左子树回退, 遍历右子树</span></span><br><span class="line">        <span class="keyword">if</span>(!stack.isEmpty())&#123;</span><br><span class="line">            node=stack.pop();</span><br><span class="line">            node=node.right;</span><br><span class="line">        &#125;            </span><br><span class="line">    &#125; <span class="keyword">while</span> (!(node==<span class="keyword">null</span> &amp;&amp; stack.empty()))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归实现的方法, 系统运行时会在虚拟机栈集建立方法的递归调用栈, 每次调用都会把方法数据现场做为一个栈帧压入栈中, 时间和空间占用都要大于栈实现. 在编程过程中, 对于能够用栈结构模拟递归调用过程的, 都应该采用自己的栈结构实现.</p>
+<h4 id="简单示例-带权最短路径的计算"><a href="#简单示例-带权最短路径的计算" class="headerlink" title="简单示例, 带权最短路径的计算"></a>简单示例, 带权最短路径的计算</h4><blockquote>
+<p>  问题: </p>
+</blockquote>
+<p>问题来源: poj 2253</p>
+<p><a href="http://poj.org/problem?id=2253" target="_blank" rel="noopener">http://poj.org/problem?id=2253</a></p>
+<p>分析:</p>
+<ol>
+<li>问题给出的图模型已经很明显了, 我们需要编写录入图结构的代码</li>
+<li>需要记录的信息包括到达某个节点的最优距离, 以及到达终点的最优路径</li>
+<li>可以剪枝的条件包括到达距离大于节点已知最优距离的路径, 以及大于已记录最短距离的路径</li>
+<li>图可以成环, 所以DFS过程我们需要在递归邻接节点前标记节点自身已访问, 并在递归栈退出前恢复标记</li>
+<li>“2” 的结果就是结论</li>
+</ol>
+<p>代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的解法就是著名的dijkstra算法</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="/music/default_bgm.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="978518cc439cd352dd0b" data-cs="2d89825e7db6df72d065714d6b4ac1ce1829b14e" data-r="LincoXiaoQ.github.io" data-o="LincoXiaoQ" data-a="LincoXiaoQ" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</html>
