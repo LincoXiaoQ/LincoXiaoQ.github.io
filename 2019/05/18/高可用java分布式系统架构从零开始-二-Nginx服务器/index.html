@@ -10,7 +10,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="Linco, Blog,"> 
-    <meta name="description" content="第一部分: nginx的安装nginx的安装在各平台下都比较简单, 这里简单描述Linux下的安装方法, Windows直接下载文件运行.对于Debian内核的linux发行版本, nginx已经发,"> 
+    <meta name="description" content="第一部分: nginx的安装nginx的安装在各平台下都比较简单, 这里简单描述Linux下的安装方法, Windows直接下载文件运行.
+对于Debian内核的linux发行版本, nginx已经,"> 
     <meta name="author" content="Linco"> 
     <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
     <link rel="icon" href="/img/icon.png"> 
@@ -54,17 +55,18 @@
 
         </div>
         <div class="content markdown">
-            <h3 id="第一部分-nginx的安装"><a href="#第一部分-nginx的安装" class="headerlink" title="第一部分: nginx的安装"></a>第一部分: nginx的安装</h3><p>nginx的安装在各平台下都比较简单, 这里简单描述Linux下的安装方法, Windows直接<a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">下载文件运行</a>.<br>对于Debian内核的linux发行版本, nginx已经发布到公共软件源, 我们可以直接使用apt-get安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
-<p>Contos先添加软件源<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm</span><br></pre></td></tr></table></figure></p>
-<p>尝试安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install nginx</span><br></pre></td></tr></table></figure></p>
+            <h3 id="第一部分-nginx的安装"><a href="#第一部分-nginx的安装" class="headerlink" title="第一部分: nginx的安装"></a>第一部分: nginx的安装</h3><p>nginx的安装在各平台下都比较简单, 这里简单描述Linux下的安装方法, Windows直接<a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">下载文件运行</a>.</p>
+<p>对于Debian内核的linux发行版本, nginx已经发布到公共软件源, 我们可以直接使用apt-get安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
+<p>Contos先添加软件源<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm</span><br></pre></td></tr></table></figure></p>
+<p>尝试安装<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install nginx</span><br></pre></td></tr></table></figure></p>
 <p>如果上面的安装方法不能满足需要, 才考虑手动安装<br>先到官网下载最新版本的源码包  <a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">点这里</a></p>
 <p>安装所需环境, 有点多, 之前装过也没关系, 系统会去重</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get -y install gcc zlib zlib-devel pcre-devel openssl openssl-devel</span><br></pre></td></tr></table></figure>
 <p>下载下来的文件解压, 进入文件夹</p>
 <p>依次config, make, install</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
 <p>这样完成Nginx的编译安装, 可以解决没有适配包的Linux版本安装问题, 或者应对需要修改Nginx源码的情况</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->

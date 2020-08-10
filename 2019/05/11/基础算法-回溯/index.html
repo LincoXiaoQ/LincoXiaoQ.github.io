@@ -10,8 +10,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="Linco, Blog,"> 
-    <meta name="description" content="回溯算法是将问题转换为抽象图形, 然后对图形进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案
-回溯算法的典型和核心操作是DFS, 与之对应的是以BFS(广度优先搜索,"> 
+    <meta name="description" content="回溯算法是将问题抽象成一个图结构, 然后对图进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案
+​    
+回溯算法的典型和核心操作是DFS, 与之对应的是BFS(广,"> 
     <meta name="author" content="Linco"> 
     <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
     <link rel="icon" href="/img/icon.png"> 
@@ -55,9 +56,11 @@
 
         </div>
         <div class="content markdown">
-            <p>回溯算法是将问题转换为抽象图形, 然后对图形进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案</p>
-<p>回溯算法的典型和核心操作是DFS, 与之对应的是以BFS(广度优先搜索)为代表的分支界限算法</p>
-<p>回溯算法解决问题的思路大概是这样的:</p>
+            <p>回溯算法是将问题抽象成一个图结构, 然后对图进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案</p>
+<p>​    </p>
+<p>回溯算法的典型和核心操作是DFS, 与之对应的是BFS(广度优先搜索)为代表的分支界限算法</p>
+<p>​    </p>
+<p>回溯算法解决问题的思路:</p>
 <ol>
 <li>按问题构造抽象图形, 可以是图或树</li>
 <li>明确需要记录的节点信息</li>
@@ -65,32 +68,37 @@
 <li>DFS跳过剪枝遍历节点, 归纳信息</li>
 <li>得到结论</li>
 </ol>
-<p>所以, 能够使用回溯算法解决的问题需要满足以下条件</p>
+<p>​    </p>
+<p>能够使用回溯算法解决的问题需要满足以下条件</p>
 <ol>
 <li>问题能够抽象成节点有限的图形</li>
 <li>能够通过遍历找到用于求解答案的关键信息</li>
 </ol>
+<p>​    </p>
 <h4 id="DFS-算法实现"><a href="#DFS-算法实现" class="headerlink" title="DFS 算法实现"></a>DFS 算法实现</h4><p>前面提到回溯算法核心就是DFS, 那就先说一下DFS算法, 这里以二叉树的DFS遍历为例, 二叉树的DFS适用于前序, 中序和后序遍历, 不适用于层级遍历</p>
-<p>一般来说, dfs有两种方法, 分别通过递归和栈实现</p>
+<p>​    </p>
+<p>一般来说, dfs有两种, 分别通过递归和栈实现</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 递归实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(node==<span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">    preOrder(node.left);</span><br><span class="line">    preOrder(node.right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 栈实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    Stack&lt;TreeNode&gt; treeNodeStack=<span class="keyword">new</span> Stack();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(node!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">            stack.push(node);</span><br><span class="line">            node=node.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 节点左子树回退, 遍历右子树</span></span><br><span class="line">        <span class="keyword">if</span>(!stack.isEmpty())&#123;</span><br><span class="line">            node=stack.pop();</span><br><span class="line">            node=node.right;</span><br><span class="line">        &#125;            </span><br><span class="line">    &#125; <span class="keyword">while</span> (!(node==<span class="keyword">null</span> &amp;&amp; stack.empty()))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>递归实现的方法, 系统运行时会在虚拟机栈集建立方法的递归调用栈, 每次调用都会把方法数据现场做为一个栈帧压入栈中, 时间和空间占用都要大于栈实现. 在编程过程中, 对于能够用栈结构模拟递归调用过程的, 都应该采用自己的栈结构实现.</p>
-<h4 id="简单示例-带权最短路径的计算"><a href="#简单示例-带权最短路径的计算" class="headerlink" title="简单示例, 带权最短路径的计算"></a>简单示例, 带权最短路径的计算</h4><blockquote>
+<p>递归实现的方法, 系统运行时会在虚拟机栈集建立方法的递归调用栈, 每次调用都会把方法的数据现场做为一个栈帧压入栈中, 时间和空间占用都要大于栈实现. 在编程过程中, 对于能够用栈结构模拟递归调用过程的, 都应该采用自己的栈结构实现.</p>
+<p>​    </p>
+<h4 id="简单示例-八皇后问题"><a href="#简单示例-八皇后问题" class="headerlink" title="简单示例, 八皇后问题"></a>简单示例, 八皇后问题</h4><blockquote>
 <p>  问题: </p>
 </blockquote>
-<p>问题来源: poj 2253</p>
-<p><a href="http://poj.org/problem?id=2253" target="_blank" rel="noopener">http://poj.org/problem?id=2253</a></p>
+<p>问题来源: hdu 2553</p>
+<p><a href="http://acm.hdu.edu.cn/showproblem.php?pid=2553" target="_blank" rel="noopener">http://acm.hdu.edu.cn/showproblem.php?pid=2553</a></p>
+<p>​    </p>
 <p>分析:</p>
 <ol>
-<li>问题给出的图模型已经很明显了, 我们需要编写录入图结构的代码</li>
-<li>需要记录的信息包括到达某个节点的最优距离, 以及到达终点的最优路径</li>
-<li>可以剪枝的条件包括到达距离大于节点已知最优距离的路径, 以及大于已记录最短距离的路径</li>
-<li>图可以成环, 所以DFS过程我们需要在递归邻接节点前标记节点自身已访问, 并在递归栈退出前恢复标记</li>
-<li>“2” 的结果就是结论</li>
+<li>国际象棋棋盘 8*8 的格子上放置8个皇后, 要求相互不能攻击到, 要求列出放置方法</li>
+<li>在同一直线上的格子坐标, x1 == x2 || y1 == y2</li>
+<li>以棋盘横竖不在一条直线的两点可以通过 (x1-x2)/(y1-y2) 计算斜率, 简单看图可以得出在同一斜线上的点倾斜角内角为45%, 斜率是1/-1</li>
+<li>逐行放置一个棋子, 适当剪枝, 找到结果后输出即可</li>
 </ol>
-<p>代码如下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>上面的解法就是著名的dijkstra算法</p>
+<p>​    </p>
+<p>核心代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">	<span class="keyword">int</span> MAX_BOARD = <span class="number">8</span>, count = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span>[][] board = <span class="keyword">new</span> <span class="keyword">int</span>[MAX_BOARD][MAX_BOARD];</span><br><span class="line">	<span class="keyword">int</span>[] points = <span class="keyword">new</span> <span class="keyword">int</span>[MAX_BOARD]; <span class="comment">// x=数组索引</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fillBoard</span><span class="params">(<span class="keyword">int</span> row)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (row == MAX_BOARD) &#123;</span><br><span class="line">			count++;</span><br><span class="line">			printResult(board);</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> column = <span class="number">0</span>; column &lt; MAX_BOARD; column++) &#123;</span><br><span class="line">			<span class="keyword">if</span> (placeable(row, column, points)) &#123;    <span class="comment">//判断这个位置是否可以放皇后</span></span><br><span class="line"><span class="comment">//				如果不是为了输出放置状态,不需要使用int[][]记录, 只用</span></span><br><span class="line">				board[row][column] = <span class="number">1</span>;</span><br><span class="line">				points[row] = column;</span><br><span class="line">				fillBoard(row + <span class="number">1</span>);</span><br><span class="line">				board[row][column] = <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">placeable</span><span class="params">(<span class="keyword">int</span> row, <span class="keyword">int</span> column, <span class="keyword">int</span>[] points)</span></span>&#123;</span><br><span class="line"><span class="comment">//		points只有截止row-1的row位是有效的</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; row; index ++)&#123;</span><br><span class="line">			<span class="keyword">if</span> (points[index] == column)</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">			<span class="keyword">if</span> (Math.abs(points[index] - column) == Math.abs(index -row))</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>​    </p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">

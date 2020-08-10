@@ -60,7 +60,11 @@
 <p><img src="1573787889811.png" alt="配置文件"></p>
 <p>这里创建了dev和test两个环境的配置文件, 用的是yml格式, 如果用properties也是一样的</p>
 <p>打包后, 在启动时加入参数可以启动特定配置, 需要输入后面的环境标识</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">最终的结果是加载了application.yml(基本配置)和application-test.yml(环境配置)两个文件, 环境配置和基本配置会同时生效, 如果两个文件中存在相同项, 环境配置将会覆盖基本配置</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">这样每次启动都要添加参数未免太过麻烦, 万一生产环境忘记加参数要出大事. 我们可以在打包的时候控制使用的配置文件, spring中称为profile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">在application.yml添加如下配置</span><br><span class="line"></span><br><span class="line">```yaml</span><br><span class="line">spring:</span><br><span class="line">  profiles:</span><br><span class="line">    active: test</span><br></pre></td></tr></table></figure>
+<p><code>--spring.profiles.active=test</code></p>
+<p>最终的结果是加载了application.yml(基本配置)和application-test.yml(环境配置)两个文件, 环境配置和基本配置会同时生效, 如果两个文件中存在相同项, 环境配置将会覆盖基本配置</p>
+<p>这样每次启动都要添加参数未免太过麻烦, 万一生产环境忘记加参数要出大事. 我们可以在打包的时候控制使用的配置文件, spring中称为profile</p>
+<p>在application.yml添加如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span></span><br><span class="line"><span class="attr">    active:</span> <span class="string">test</span></span><br></pre></td></tr></table></figure>
 <p>像这样打出来的包默认就是test环境的, 放到对应环境直接启动就行了</p>
 <p>但这样还是有问题, 每次发布不同环境都要改配置, version control 也一团糟</p>
 <p>先把application.yml对应配置项改成</p>
@@ -72,7 +76,16 @@
 <p>activeByDefault 保留一个为 true, 这是默认启用的配置文件</p>
 <p>上面在maven中三个 profile 标签定义了三个profile, 每个profile中可以加入更多的properties, 而现在用到的参数只有 “activeByDefault” </p>
 <p>编辑完成后, 用maven -P ( profile_id) 命令选择 profile 配置, 一般是打包时使用, 完整的命令是</p>
-<figure class="highlight plain"><figcaption><span>-P test -f pom.xml```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">在idea中, 可以在运行列表创建工作项方便以后运行, 打开maven project窗口, 展开项目-&gt;lifecycle-&gt;package</span><br><span class="line"></span><br><span class="line">右键 create</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">![1573790103860](1573790103860.png)</span><br><span class="line"></span><br><span class="line">名称加个标识, 方便区分</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">命令里面加上 -P ( profile_id)</span><br><span class="line"></span><br><span class="line">保存</span><br><span class="line"></span><br><span class="line"> ![1573790312780](1573790312780.png)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">最后打包运行, 如果提示</span><br><span class="line"></span><br><span class="line">```The following profiles are active: (你的配置)</span><br></pre></td></tr></table></figure>
+<p><code>maven -P test -f pom.xml</code></p>
+<p>在idea中, 可以在运行列表创建工作项方便以后运行, 打开maven project窗口, 展开项目-&gt;lifecycle-&gt;package</p>
+<p>右键 create</p>
+<p><img src="1573790103860.png" alt="1573790103860"></p>
+<p>名称加个标识, 方便区分</p>
+<p>命令里面加上 -P ( profile_id)</p>
+<p>保存</p>
+<p> <img src="1573790312780.png" alt="1573790312780"></p>
+<p>最后打包运行, 如果提示</p>
+<p><code>The following profiles are active: (你的配置)</code></p>
 <p>就成功了, 如图</p>
 <p><img src="1573790527397.png" alt="1573790527397"></p>
 

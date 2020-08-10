@@ -63,12 +63,12 @@ xxx.xx是,">
 <h5 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h5><ol>
 <li>检查mapper-locations配置项, 目标的xml路径是否包含在mapper-locations范围</li>
 <li>检查mapper的xml文件名, 必须与接口类名完全一致</li>
-<li>如果dao层是带base包的多层次结构(例如下图, 很多mybatis生成器都是这样的, 这是一个极其优秀的设计), mapper需要使用相同的结构, 并且<strong>需要添加包的路径到mapper-locations</strong></li>
+<li>如果dao层是带base包的多层次结构 (类似下图, 一些mybatis生成器是这样的, 这是一个很优秀的设计), mapper需要使用相同的结构, 并且<strong>需要添加包的路径到mapper-locations</strong></li>
 </ol>
 <p><img src="1560097243144.png" alt="1560097243144"></p>
 <p>例如</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mybatis:</span></span><br><span class="line"><span class="attr">  mapper-locations:</span> <span class="attr">classpath:mapping/*Mapper.xml,classpath:mapping/base/*Mapper.xml</span></span><br></pre></td></tr></table></figure>
-<p>1,2项排查编码过程的失误, 也是各资料提及题目错误信息的常见方法. 但并不能解决我遇到的问题, 最终通过猜想和尝试发现第三种原因, 这才是我遇到这个问题的根源, 记录下和大家一同学习</p>
+<p>第 1, 2 步排查编码过程的失误, 也是各资料提及标题错误信息的常见方法. 但并不能解决我遇到的问题, 最终通过猜想和尝试发现第三种原因, 这才是我遇到这个问题的根源</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
