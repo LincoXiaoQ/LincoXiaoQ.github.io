@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>基础算法-回溯 - Linco</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Linco, Blog,"> 
+    <meta name="description" content="回溯算法是将问题抽象成一个图结构, 然后对图进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案
+​    
+回溯算法的典型和核心操作是DFS, 与之对应的是BFS(广,"> 
+    <meta name="author" content="Linco"> 
+    <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
+    <link rel="icon" href="/img/icon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Linco</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">基础算法-回溯</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">基础算法-回溯</h1>
+        <div class="stuff">
+            <span>五月 11, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/java/">java</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/基础算法/">基础算法</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/算法竞赛基础/">算法竞赛基础</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>回溯算法是将问题抽象成一个图结构, 然后对图进行DFS(深度优先搜索), 在遍历过程中记录关键信息, 最终找到所需要的问题答案</p>
+<p>​    </p>
+<p>回溯算法的典型和核心操作是DFS, 与之对应的是BFS(广度优先搜索)为代表的分支界限算法</p>
+<p>​    </p>
+<p>回溯算法解决问题的思路:</p>
+<ol>
+<li>按问题构造抽象图形, 可以是图或树</li>
+<li>明确需要记录的节点信息</li>
+<li>列出剪枝的规则以忽略不相干节点</li>
+<li>DFS跳过剪枝遍历节点, 归纳信息</li>
+<li>得到结论</li>
+</ol>
+<p>​    </p>
+<p>能够使用回溯算法解决的问题需要满足以下条件</p>
+<ol>
+<li>问题能够抽象成节点有限的图形</li>
+<li>能够通过遍历找到用于求解答案的关键信息</li>
+</ol>
+<p>​    </p>
+<h4 id="DFS-算法实现"><a href="#DFS-算法实现" class="headerlink" title="DFS 算法实现"></a>DFS 算法实现</h4><p>前面提到回溯算法核心就是DFS, 那就先说一下DFS算法, 这里以二叉树的DFS遍历为例, 二叉树的DFS适用于前序, 中序和后序遍历, 不适用于层级遍历</p>
+<p>​    </p>
+<p>一般来说, dfs有两种, 分别通过递归和栈实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 递归实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(node==<span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">    preOrder(node.left);</span><br><span class="line">    preOrder(node.right);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 栈实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">(TreeNode node)</span></span>&#123;</span><br><span class="line">    Stack&lt;TreeNode&gt; treeNodeStack=<span class="keyword">new</span> Stack();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">do</span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(node!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.print(node.value+<span class="string">"  "</span>);</span><br><span class="line">            stack.push(node);</span><br><span class="line">            node=node.left;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 节点左子树回退, 遍历右子树</span></span><br><span class="line">        <span class="keyword">if</span>(!stack.isEmpty())&#123;</span><br><span class="line">            node=stack.pop();</span><br><span class="line">            node=node.right;</span><br><span class="line">        &#125;            </span><br><span class="line">    &#125; <span class="keyword">while</span> (!(node==<span class="keyword">null</span> &amp;&amp; stack.empty()))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归实现的方法, 系统运行时会在虚拟机栈集建立方法的递归调用栈, 每次调用都会把方法的数据现场做为一个栈帧压入栈中, 时间和空间占用都要大于栈实现. 在编程过程中, 对于能够用栈结构模拟递归调用过程的, 都应该采用自己的栈结构实现.</p>
+<p>​    </p>
+<h4 id="简单示例-八皇后问题"><a href="#简单示例-八皇后问题" class="headerlink" title="简单示例, 八皇后问题"></a>简单示例, 八皇后问题</h4><blockquote>
+<p>  问题: </p>
+</blockquote>
+<p>问题来源: hdu 2553</p>
+<p><a href="http://acm.hdu.edu.cn/showproblem.php?pid=2553" target="_blank" rel="noopener">http://acm.hdu.edu.cn/showproblem.php?pid=2553</a></p>
+<p>​    </p>
+<p>分析:</p>
+<ol>
+<li>国际象棋棋盘 8*8 的格子上放置8个皇后, 要求相互不能攻击到, 要求列出放置方法</li>
+<li>在同一直线上的格子坐标, x1 == x2 || y1 == y2</li>
+<li>以棋盘横竖不在一条直线的两点可以通过 (x1-x2)/(y1-y2) 计算斜率, 简单看图可以得出在同一斜线上的点倾斜角内角为45%, 斜率是1/-1</li>
+<li>逐行放置一个棋子, 适当剪枝, 找到结果后输出即可</li>
+</ol>
+<p>​    </p>
+<p>核心代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">	<span class="keyword">int</span> MAX_BOARD = <span class="number">8</span>, count = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span>[][] board = <span class="keyword">new</span> <span class="keyword">int</span>[MAX_BOARD][MAX_BOARD];</span><br><span class="line">	<span class="keyword">int</span>[] points = <span class="keyword">new</span> <span class="keyword">int</span>[MAX_BOARD]; <span class="comment">// x=数组索引</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fillBoard</span><span class="params">(<span class="keyword">int</span> row)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (row == MAX_BOARD) &#123;</span><br><span class="line">			count++;</span><br><span class="line">			printResult(board);</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> column = <span class="number">0</span>; column &lt; MAX_BOARD; column++) &#123;</span><br><span class="line">			<span class="keyword">if</span> (placeable(row, column, points)) &#123;    <span class="comment">//判断这个位置是否可以放皇后</span></span><br><span class="line"><span class="comment">//				如果不是为了输出放置状态,不需要使用int[][]记录, 只用</span></span><br><span class="line">				board[row][column] = <span class="number">1</span>;</span><br><span class="line">				points[row] = column;</span><br><span class="line">				fillBoard(row + <span class="number">1</span>);</span><br><span class="line">				board[row][column] = <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">placeable</span><span class="params">(<span class="keyword">int</span> row, <span class="keyword">int</span> column, <span class="keyword">int</span>[] points)</span></span>&#123;</span><br><span class="line"><span class="comment">//		points只有截止row-1的row位是有效的</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; row; index ++)&#123;</span><br><span class="line">			<span class="keyword">if</span> (points[index] == column)</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">			<span class="keyword">if</span> (Math.abs(points[index] - column) == Math.abs(index -row))</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>​    </p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="/music/default_bgm.mp3"></li>
+                    
+                        <li title="1" data-url="/music/big_fish_piano.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="978518cc439cd352dd0b" data-cs="2d89825e7db6df72d065714d6b4ac1ce1829b14e" data-r="LincoXiaoQ.github.io" data-o="LincoXiaoQ" data-a="LincoXiaoQ" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</html>

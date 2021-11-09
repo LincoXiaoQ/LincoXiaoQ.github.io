@@ -1,0 +1,6 @@
+Linco
+
+列表文章图片默认采用cover参数的图片, 没有cover参数使用这里的cover.jpg
+首页置顶大图默认采用welcome-cover参数, 没有的话使用cover参数, cover参数也没有则采用这里的welcome-cover.jpg
+logo.png除透明色外必须单色, 否则无法显示直接留白
+发布时会把主题的source和根目录的source的内部资源合并发布到根目录
