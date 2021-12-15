@@ -57,7 +57,6 @@
 <p>令牌桶算法声明一个有限大小的容器, 按特定的速率往容器中添加令牌. 限制程序处理到限速的位置时, 只有从容器中拿到令牌才能继续操作, 而被拿走的令牌不放回容器中, 而是永远消失</p>
 <p><img src="image-20211215140744518.png" alt="image-20211215140744518"></p>
 <p>对比计数算法和漏桶算法, 令牌桶算法多数场景下更贴近实际需要</p>
-<p>对比表1</p>
 <table>
 <thead>
 <tr>
@@ -99,7 +98,9 @@
 <p>阻塞式获取令牌, 等待直到成功</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TokenPoolUtil.syncAcquire();</span><br></pre></td></tr></table></figure>
 <p>迭代内容:</p>
-<p>​    加入key参数, 区分key维护多组令牌配置和管理多组令牌</p>
+<ul>
+<li>​    加入key参数, 区分key维护多组令牌配置和管理多组令牌</li>
+</ul>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
