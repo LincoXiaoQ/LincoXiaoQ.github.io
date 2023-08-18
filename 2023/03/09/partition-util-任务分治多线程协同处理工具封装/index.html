@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>partition-util 任务分治多线程协同处理工具封装 - Linco</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Linco, Blog,"> 
+    <meta name="description" content="工作中难免遇到需要对相对较多的数据进行耗时处理的场景, 这时顺序处理的效率难以满足要求
+当这批数据的处理没有顺序要求, 且处理过程互不影响时, 可以拆分出多组数据简化处理, 称为分治. 
+&amp;nbsp,"> 
+    <meta name="author" content="Linco"> 
+    <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
+    <link rel="icon" href="/img/icon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Linco</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">partition-util 任务分治多线程协同处理工具封装</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">partition-util 任务分治多线程协同处理工具封装</h1>
+        <div class="stuff">
+            <span>三月 09, 2023</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>工作中难免遇到需要对相对较多的数据进行耗时处理的场景, 这时顺序处理的效率难以满足要求</p>
+<p>当这批数据的处理没有顺序要求, 且处理过程互不影响时, 可以拆分出多组数据简化处理, 称为分治. </p>
+<p>&nbsp;&nbsp;</p>
+<p>通过分治能减少每一步操作的数据量. 突破数据量限制, 同时也能依靠多线程执行提升处理速度</p>
+<p>&nbsp;&nbsp;</p>
+<p>因为是比较通用的功能, 我封装了一个通用的工具类</p>
+<p>&nbsp;&nbsp;</p>
+<p>首先定义一个抽象的可分治任务对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.function.BiFunction;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> lin</span></span><br><span class="line"><span class="comment"> * 切分子任务对象</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">DivisibleTask</span>&lt;<span class="title">T</span>,<span class="title">R</span>, <span class="title">P</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 每份数据量</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> num;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 单任务超时时间, 单位s </span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> waitTime;</span><br><span class="line">    <span class="keyword">private</span> List&lt;T&gt; dataList;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> current = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> BiFunction&lt;P, List&lt;T&gt;, R&gt; function;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DivisibleTask</span><span class="params">(<span class="keyword">int</span> num, <span class="keyword">int</span> waitTime, List&lt;T&gt; dataList, BiFunction&lt;P, List&lt;T&gt;, R&gt; function)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.num = num;</span><br><span class="line">        <span class="keyword">this</span>.waitTime= waitTime;</span><br><span class="line">        <span class="keyword">this</span>.dataList = dataList;</span><br><span class="line">        <span class="keyword">this</span>.function = function;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> List&lt;T&gt; <span class="title">nextSegment</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (current &gt;= dataList.size())&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> to = current + num;</span><br><span class="line">        <span class="keyword">if</span> (to &gt;= dataList.size()) &#123;</span><br><span class="line">            to = dataList.size();</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;T&gt; list = dataList.subList(current, to);</span><br><span class="line">        current = to;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">segmentCnt</span> <span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> dataList.size()/num + (dataList.size()%num &gt; <span class="number">0</span> ? <span class="number">1</span>:<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">getWaitTime</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> waitTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> BiFunction&lt;P, List&lt;T&gt;, R&gt; getFunction() &#123;</span><br><span class="line">        <span class="keyword">return</span> function;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> R <span class="title">mergeResult</span><span class="params">(List&lt;R&gt; subResults)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;</p>
+<p>一个执行类, 实现划分子任务处理的过程, 同时也是使用入口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> lin</span></span><br><span class="line"><span class="comment"> * 分治执行类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ForkTaskUtil</span>&lt;<span class="title">T</span>, <span class="title">R</span>, <span class="title">P</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> R <span class="title">startForkTask</span><span class="params">(DivisibleTask&lt;T, R, P&gt; divisibleTask, P param)</span> <span class="keyword">throws</span> RuntimeException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> taskNum = divisibleTask.segmentCnt();</span><br><span class="line">        <span class="keyword">int</span> waitTime = divisibleTask.getWaitTime();</span><br><span class="line">        CountDownLatch cdLatch = <span class="keyword">new</span> CountDownLatch(taskNum);</span><br><span class="line">        <span class="keyword">final</span> List&lt;R&gt; subResults = <span class="keyword">new</span> ArrayList&lt;&gt;(taskNum);</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            List&lt;T&gt; subList = divisibleTask.nextSegment();</span><br><span class="line">            <span class="keyword">if</span> (subList != <span class="keyword">null</span> &amp;&amp; subList.size() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">                Runnable runnable = () -&gt; &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        subResults.add(divisibleTask.getFunction().apply(param, subList));</span><br><span class="line">                    &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                        log.error(<span class="string">"子线程处理失败, 将不会写入结果列表"</span>, e);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                        cdLatch.countDown();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="comment">// todo 分配到线程池执行, 比较稳定</span></span><br><span class="line">                <span class="keyword">new</span> Thread(runnable).start();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">boolean</span> wait = cdLatch.await(waitTime, TimeUnit.MINUTES);</span><br><span class="line">            <span class="keyword">if</span> (wait)&#123;</span><br><span class="line">                <span class="keyword">if</span> (subResults.size() &lt; taskNum)&#123;</span><br><span class="line">                    <span class="comment">// 过程有报错, 终止线程</span></span><br><span class="line">                    log.error(<span class="string">"子线程处理失败, 子线程返回数量少于预期"</span>);</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"子线程处理失败, 子线程返回数量少于预期"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> divisibleTask.mergeResult(subResults);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                log.error(<span class="string">"子线程处理失败, 等待子线程超时"</span>);</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"子线程处理失败, 等待子线程超时"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            log.error(<span class="string">"并发处理过程线程异常"</span>, e);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"并发处理过程线程异常"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;</p>
+<p><strong>使用示例</strong></p>
+<ol>
+<li>首先声明需要分治的任务</li>
+</ol>
+<p>直接使用对象的匿名内部类复写mergeResult方法, 提供合并结果的过程, 并指定泛型对象类型</p>
+<p>&nbsp;&nbsp;</p>
+<p><strong>preMax</strong>是单个分组的数量上限, ids是待并发处理的数据列表, <strong>charGroup</strong>方法是需要执行耗时操作的业务方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">DivisibleTask&lt;String, List&lt;ResultVo&gt;, Query&gt; divisibleTask = <span class="keyword">new</span> DivisibleTask&lt;&gt;(preMax, <span class="number">2</span>, ids, <span class="keyword">this</span>::chartGroup) &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;ResultVo&gt; <span class="title">mergeResult</span><span class="params">(List&lt;List&lt;ResultVo&gt;&gt; subResults)</span> </span>&#123;</span><br><span class="line">        List&lt;ResultVo&gt; mergeList = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">        subResults.forEach(mergeList::addAll);</span><br><span class="line">        <span class="keyword">return</span> mergeList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;</p>
+<ol start="2">
+<li>对列表数据使用多线程处理</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;ResultVo&gt; resultVoList = <span class="keyword">new</span> ForkTaskUtil&lt;String, List&lt;ResultVo&gt;, Query&gt;().startForkTask(divisibleTask, query);</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;</p>
+<hr>
+<p>ps: 当分治的入参出参相同时, 这个操作可以套娃, 转变成树形的分治结构, 只需要在调用分治方法中按比例计算长度, 处理方法中按长度选择执行处理或递归调用分治方法</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="/music/default_bgm.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="978518cc439cd352dd0b" data-cs="2d89825e7db6df72d065714d6b4ac1ce1829b14e" data-r="LincoXiaoQ.github.io" data-o="LincoXiaoQ" data-a="LincoXiaoQ" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</html>
