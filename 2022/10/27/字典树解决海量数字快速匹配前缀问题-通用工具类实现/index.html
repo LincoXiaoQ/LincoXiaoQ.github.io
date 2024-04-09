@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>字典树解决海量数字快速匹配前缀问题-通用工具类实现 - Linco</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Linco, Blog,"> 
+    <meta name="description" content="背景: 现在业务上需要对一个QPS上万的高频接口做数据过滤, 对数据中来源标识(纯数字)是特定7k个不定长数值之一的数据进行识别分拣
+适用范围: 算法用于快速判断海量数字是否以一组限量数字集中的任意,"> 
+    <meta name="author" content="Linco"> 
+    <link rel="alternative" href="atom.xml" title="Linco" type="application/atom+xml"> 
+    <link rel="icon" href="/img/icon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Linco</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">字典树解决海量数字快速匹配前缀问题-通用工具类实现</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">字典树解决海量数字快速匹配前缀问题-通用工具类实现</h1>
+        <div class="stuff">
+            <span>十月 27, 2022</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/项目应用/">项目应用</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>背景: 现在业务上需要对一个QPS上万的高频接口做数据过滤, 对数据中来源标识(纯数字)是特定7k个不定长数值之一的数据进行识别分拣</p>
+<p>适用范围: 算法用于快速判断海量数字是否以一组限量数字集中的任意一个数字作为前缀</p>
+<p>业务示例: 假定有家快递公司对配送区域的标识是按行政区划编号的, 01省01市02区13街道37社区编号为0101021337. 现在快递公司对于所有中高风险的区域暂停快递服务, 这些区域可能是市(4位编号),区县(6位),街道镇(8位), 最多精确到社区乡村(10位. 最终整理出来区域编号是一份不定长的数字列表. 只需要对收寄区域从左侧匹配到这份列表, 就能识别处理暂停服务的订单</p>
+<p>字典树实现有两种, 区别是存取子节点的方式不同</p>
+<ol>
+<li><p>子节点通过定长数组保存的字典树I只适用于字符集数量少的场景, 通过字符与数组下标的一对一映射查取树节点. 优势是速度快, 邻近数据占用空间小; 缺点是字符集数量指数级影响算法的空间复杂度, 对于数据少且分散时需要的空间较多</p>
+</li>
+<li><p>子节点通过Map映射的字典树在一般场景下都适用, 处理效率会比I类字典树低一点, 但胜在空间利用率高, 并且面对大字符集的数据时不会指数级的膨胀</p>
+</li>
+</ol>
+<p>纯数字的匹配采用I类字典树, 以下是抽象工具类实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 快速索引匹配的字典树结构, 支持前置匹配和全文匹配</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChannelTree</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*  不使用单例, 不限制唯一实例, 由使用的业务自由控制  */</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    private static final ChannelTree CHANNEL_TREE = new ChannelTree();</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    public static ChannelTree getInstance() &#123;</span></span><br><span class="line"><span class="comment">        return CHANNEL_TREE;</span></span><br><span class="line"><span class="comment">    &#125;*/</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> nodeStatus;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> TreeNode[] child;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*同步锁对象*/</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> TreeNode <span class="title">getChildInit</span><span class="params">(Byte index)</span></span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (child == <span class="keyword">null</span>)&#123;</span><br><span class="line">                child = <span class="keyword">new</span> TreeNode[<span class="number">10</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (child[index] == <span class="keyword">null</span>) &#123;</span><br><span class="line">                child[index] = <span class="keyword">new</span> TreeNode();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> child[index];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> TreeNode <span class="title">getNode</span><span class="params">(<span class="keyword">byte</span> i)</span></span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (child == <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> i &lt; <span class="number">10</span> ? child[i]:<span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> TreeNode root = <span class="keyword">new</span> TreeNode();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addNumber</span><span class="params">(String numStr)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (numStr == <span class="keyword">null</span> || <span class="string">""</span>.equals(numStr)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode node = root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">byte</span> aByte : numStr.getBytes()) &#123;</span><br><span class="line">            <span class="comment">// 参数不符造成位置错误直接抛异常, 公共组件提前校验也是抛运行异常, 反而影响效率</span></span><br><span class="line">            node = node.getChildInit((<span class="keyword">byte</span>)(aByte-<span class="number">48</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        node.nodeStatus = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 全匹配查询</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compareFull</span><span class="params">(String numStr)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (numStr == <span class="keyword">null</span> || <span class="string">""</span>.equals(numStr)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode node = root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">byte</span> aByte : numStr.getBytes()) &#123;</span><br><span class="line">            node = node.getNode((<span class="keyword">byte</span>)(aByte - <span class="number">48</span>));</span><br><span class="line">            <span class="keyword">if</span> (node == <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// nodeStatus不为true意味着查询串比字典串端, 不认为符合</span></span><br><span class="line">        <span class="keyword">return</span> node.nodeStatus;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前缀匹配</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">comparePrefix</span><span class="params">(String numStr)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (numStr == <span class="keyword">null</span> || <span class="string">""</span>.equals(numStr)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode node = root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">byte</span> aByte : numStr.getBytes()) &#123;</span><br><span class="line">            node = node.getNode((<span class="keyword">byte</span>)(aByte - <span class="number">48</span>));</span><br><span class="line">            <span class="keyword">if</span> (node == <span class="keyword">null</span>)&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.nodeStatus) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 字符串查完未走完一个字典, 字典前缀不完全满足, 不认为符合</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>使用方法</strong></p>
+<ol>
+<li>初始化字典</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">channelTree = <span class="keyword">new</span> ChannelTree();  </span><br><span class="line">channelList.stream().parallel().forEach(channelTree::addNumber);</span><br></pre></td></tr></table></figure>
+<p>channelList 是匹配数字列表, 类型 <code>List&lt;String&gt;</code></p>
+<pre><code>2.匹配数据
+</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> isMatch = channelTree.comparePrefix(channelNo)</span><br></pre></td></tr></table></figure>
+<p>日常使用下7k+数字前缀每秒匹配1w~2w数据, 未产生性能压力</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="/music/default_bgm.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="978518cc439cd352dd0b" data-cs="2d89825e7db6df72d065714d6b4ac1ce1829b14e" data-r="LincoXiaoQ.github.io" data-o="LincoXiaoQ" data-a="LincoXiaoQ" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</html>
